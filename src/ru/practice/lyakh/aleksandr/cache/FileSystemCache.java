@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class FileSystemCache<K, V extends Serializable> implements Cache<K, V> {
+public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
     private final Map<K, File> memoryObjects;
-    private List keyFileSystemCache;
+    private Map<K, V> returnMemory;
+    private List<K> keyFileSystemCache;
     private final int sizeMemoryObjects;
-    private final String tmpPath;
+    private String tmpPath;
 
     //Инициирования размера сохраняемых данных и инициирования TMP директории.
     public FileSystemCache(int sizeMemoryObjects) {
@@ -19,8 +20,6 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V> {
         this.keyFileSystemCache = new ArrayList();
         this.sizeMemoryObjects = sizeMemoryObjects;
         this.tmpPath = System.getProperty("java.io.tmpdir");
-
-
     }
 
     //Инициирования размера сохраняемых данных и TMP директорию.
@@ -131,5 +130,10 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V> {
     @Override
     public K lastKey() {
         return (K) keyFileSystemCache.get(0);
+    }
+
+    public Map<K, V> getReturnMemory() {
+        keyFileSystemCache.forEach(keyFileSystem -> returnMemory.put(keyFileSystem, get(keyFileSystem)));
+        return returnMemory;
     }
 }

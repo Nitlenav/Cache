@@ -7,10 +7,12 @@ import ru.practice.lyakh.aleksandr.exception.OutOfMemoryCache;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
 
 public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
     private final MemoryCache<K, V> memoryCache;
     private final FileSystemCache<K, V> fileSystemCache;
+    private Map <K, V> returnMemoryCash;
     private final int maxSizeMemoryCache;
     private final int maxSizeFileSystemCache;
     private int sizeCashe;
@@ -125,5 +127,9 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
         return fileSystemCache.lastKey();
     }
 
-
+    public Map<K, V> getReturnMemoryCash() {
+        returnMemoryCash.putAll( memoryCache.getMemoryObjects());
+        returnMemoryCash.putAll(fileSystemCache.getReturnMemory());
+        return returnMemoryCash;
+    }
 }

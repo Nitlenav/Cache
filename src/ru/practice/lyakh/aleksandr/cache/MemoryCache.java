@@ -86,4 +86,10 @@ public class MemoryCache<K, V extends Serializable> implements Cache<K, V> {
     public K lastKey() {
         return (K) keyMemoryObjects.get(0);
     }
+
+
+    public Map<K, V> getMemoryObjects() {
+        return memoryObjects;
+    }
+
 }
