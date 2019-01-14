@@ -4,6 +4,7 @@ import ru.practice.lyakh.aleksandr.cache.Cache;
 import ru.practice.lyakh.aleksandr.cache.FileSystemCache;
 import ru.practice.lyakh.aleksandr.cache.MemoryCache;
 import ru.practice.lyakh.aleksandr.exception.OutOfMemoryCache;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +13,7 @@ import java.util.Map;
 public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
     private final MemoryCache<K, V> memoryCache;
     private final FileSystemCache<K, V> fileSystemCache;
-    private Map <K, V> returnMemoryCash;
+    private Map<K, V> returnMemoryCash;
     private final int maxSizeMemoryCache;
     private final int maxSizeFileSystemCache;
     private int sizeCashe;
@@ -57,6 +58,11 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
                 && emptyMemorySpace) {
             return memoryCache.put(key, value);
             //Перезаписываем данные в MemoryCache
+        } else if (emptyFileSystemSpace) {
+            K lastKeyMemory = memoryCache.lastKey();
+            V lastValueMemory = memoryCache.remove(lastKeyMemory);
+            fileSystemCache.put(lastKeyMemory, lastValueMemory);
+            return memoryCache.put(key, value);
         } else if (memoryCache.containsKey(key)) {
             return memoryCache.put(key, value);
             //Условие при котором данные в FileSystemCache есть,
@@ -71,11 +77,6 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
             //Отсуствуют данные и в MemoryCache и в FileSystemCache, при наличии свободного места
             //переносим последний обьект из MemoryCache в FileSystemCache
             //а в MemoryCache записываем отсуствующий ключ и значение.
-        } else if (emptyFileSystemSpace) {
-            K lastKeyMemory = memoryCache.lastKey();
-            V lastValueMemory = memoryCache.remove(lastKeyMemory);
-            fileSystemCache.put(lastKeyMemory, lastValueMemory);
-            return memoryCache.put(key, value);
         } else {
             return false;
         }
@@ -128,7 +129,7 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
     }
 
     public Map<K, V> getReturnMemoryCash() {
-        returnMemoryCash.putAll( memoryCache.getMemoryObjects());
+        returnMemoryCash.putAll(memoryCache.getMemoryObjects());
         returnMemoryCash.putAll(fileSystemCache.getReturnMemory());
         return returnMemoryCash;
     }

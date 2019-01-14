@@ -10,13 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
     private final Map<K, File> memoryObjects;
     private Map<K, V> returnMemory;
-    private List<K> keyFileSystemCache;
+    private List keyFileSystemCache;
     private final int sizeMemoryObjects;
     private String tmpPath;
 
     //Инициирования размера сохраняемых данных и инициирования TMP директории.
     public FileSystemCache(int sizeMemoryObjects) {
-        this.memoryObjects = new ConcurrentHashMap<K, File>(sizeMemoryObjects);
+        this.memoryObjects = new ConcurrentHashMap(sizeMemoryObjects);
         this.keyFileSystemCache = new ArrayList();
         this.sizeMemoryObjects = sizeMemoryObjects;
         this.tmpPath = System.getProperty("java.io.tmpdir");
@@ -26,7 +26,7 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
     public FileSystemCache(int sizeMemoryObjects, String tmpPath) {
         this.sizeMemoryObjects = sizeMemoryObjects;
         this.tmpPath = tmpPath;
-        this.memoryObjects = new ConcurrentHashMap<K, File>(sizeMemoryObjects);
+        this.memoryObjects = new ConcurrentHashMap<>(sizeMemoryObjects);
     }
 
     //Размер хэш таблицы
@@ -114,8 +114,8 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
     //Проверяем, имеются данные в хэш таблице, по ключу и месту расположения
     @Override
     public boolean containsKey(Object key) {
-        File tempFilePath = (File) get(key);
-        if (memoryObjects.containsKey(key) && tempFilePath.exists()) {
+        //File tempFilePath = get(key);
+        if (memoryObjects.containsKey(key) ) {
             return true;
         } else {
             return false;
@@ -133,7 +133,7 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
     }
 
     public Map<K, V> getReturnMemory() {
-        keyFileSystemCache.forEach(keyFileSystem -> returnMemory.put(keyFileSystem, get(keyFileSystem)));
+        keyFileSystemCache.forEach(keyFileSystem -> returnMemory.put((K) keyFileSystem, get(keyFileSystem)));
         return returnMemory;
     }
 }
