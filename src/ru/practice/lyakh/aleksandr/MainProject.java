@@ -9,16 +9,17 @@ public class MainProject {
         Integer a = new Integer(1);
         Integer b = new Integer(2);
         Integer c = new Integer(3);
-        Integer i = new Integer(4);
+        int i = 100;
+        String d = "Шутки ради";
 
         twoLevelCache.put(a, "asdfasdfasd");
         twoLevelCache.put(b, new StringBuffer("askdjfhkjasd"));
         twoLevelCache.put(c, new Date());
-        twoLevelCache.put(i, new StringBuffer());
+        twoLevelCache.put(i, new Date());
 
         System.out.println(twoLevelCache.get(a));
         System.out.println(twoLevelCache.get(b));
         System.out.println(twoLevelCache.get(c));
-        System.out.println(twoLevelCache.get(4));
+        System.out.println(twoLevelCache.get(i));
     }
 }

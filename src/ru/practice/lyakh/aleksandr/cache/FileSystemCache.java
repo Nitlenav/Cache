@@ -2,6 +2,7 @@ package ru.practice.lyakh.aleksandr.cache;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
         this.sizeMemoryObjects = sizeMemoryObjects;
         this.tmpPath = tmpPath;
         this.memoryObjects = new ConcurrentHashMap<>(sizeMemoryObjects);
+        this.keyFileSystemCache = new ArrayList();
     }
 
     //Размер хэш таблицы
@@ -51,7 +53,7 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
             keyFileSystemCache.add(key);
             File tempFilePath;
             try (FileOutputStream fileOutputStream = new FileOutputStream(
-                    tempFilePath = Files.createTempFile(tmpPath, null, null).toFile());
+                    tempFilePath = Files.createTempFile(Paths.get(tmpPath), "TMP", "CASHE").toFile());
                  ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
                 objectOutputStream.writeObject(value);
                 objectOutputStream.flush();
