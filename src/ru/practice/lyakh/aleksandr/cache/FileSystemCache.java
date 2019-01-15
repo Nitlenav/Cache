@@ -1,16 +1,19 @@
 package ru.practice.lyakh.aleksandr.cache;
 
 import java.io.*;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
     private final Map<K, File> memoryObjects;
-    private Map<K, V> returnMemory;
+    private Map<Object, V> returnMemory;
     private List keyFileSystemCache;
     private final int sizeMemoryObjects;
     private String tmpPath;
@@ -18,17 +21,22 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
     //Инициирования размера сохраняемых данных и инициирования TMP директории.
     public FileSystemCache(int sizeMemoryObjects) {
         this.memoryObjects = new ConcurrentHashMap(sizeMemoryObjects);
+        this.returnMemory = new HashMap<>();
         this.keyFileSystemCache = new ArrayList();
         this.sizeMemoryObjects = sizeMemoryObjects;
         this.tmpPath = System.getProperty("java.io.tmpdir");
     }
 
     //Инициирования размера сохраняемых данных и TMP директорию.
-    public FileSystemCache(int sizeMemoryObjects, String tmpPath) {
+    public FileSystemCache(int sizeMemoryObjects, String tmpPath) throws IOException {
         this.sizeMemoryObjects = sizeMemoryObjects;
-        this.tmpPath = tmpPath;
         this.memoryObjects = new ConcurrentHashMap<>(sizeMemoryObjects);
+        this.returnMemory = new HashMap<>();
         this.keyFileSystemCache = new ArrayList();
+        if(!(new File(tmpPath).exists())){
+            Files.createDirectories(Paths.get(tmpPath));
+        }
+        this.tmpPath = tmpPath;
     }
 
     //Размер хэш таблицы
@@ -105,8 +113,7 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
     //Проверяем, имеются данные в хэш таблице, по Обьекту и месту расположения
     @Override
     public boolean containsValue(Object value) {
-        File tempFilePath = (File) value;
-        if (memoryObjects.containsValue(value) && tempFilePath.exists()) {
+        if (memoryObjects.containsValue(value)) {
             return true;
         } else {
             return false;
@@ -134,8 +141,9 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
         return (K) keyFileSystemCache.get(0);
     }
 
-    public Map<K, V> getReturnMemory() {
-        keyFileSystemCache.forEach(keyFileSystem -> returnMemory.put((K) keyFileSystem, get(keyFileSystem)));
+    public Map<Object, V> getReturnMemory() {
+        keyFileSystemCache.forEach(keyFileSystem -> returnMemory.put( keyFileSystem, get(keyFileSystem)));
+
         return returnMemory;
     }
 }

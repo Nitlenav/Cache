@@ -1,12 +1,11 @@
 package ru.practice.lyakh.aleksandr.cache;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MemoryCache<K, V extends Serializable> implements Cache<K, V> {
+public class MemoryCache<K, V> implements Cache<K, V> {
     private final Map<K, V> memoryObjects;
     private List keyMemoryObjects;
     private final int sizeMemoryObjects;
