@@ -19,9 +19,8 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
     private final int maxSizeFileSystemCache;
     private int sizeCashe;
     private int freeSpace;
-    private long timerKey;
 
-
+    //Инициализация хэш таблицы и количества потоков,которые смогут обращаться к различным ячейкам
     public TwoLevelCache(int maxSizeMemoryCache, int maxSizeFileSystemCache) {
         this.maxSizeMemoryCache = maxSizeMemoryCache;
         this.maxSizeFileSystemCache = maxSizeFileSystemCache;
@@ -29,7 +28,7 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
         this.fileSystemCache = new FileSystemCache<K, V>(maxSizeFileSystemCache);
         this.returnMemoryCash = new HashMap();
     }
-
+    //Инициализация хэш таблицы и количества потоков,которые смогут обращаться к различным ячейкам и путь к TMP файду
     public TwoLevelCache(int maxSizeMemoryCache, int maxSizeFileSystemCache, String path) throws IOException {
         this.maxSizeMemoryCache = maxSizeMemoryCache;
         this.maxSizeFileSystemCache = maxSizeFileSystemCache;
@@ -38,18 +37,22 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
         this.returnMemoryCash = new HashMap();
     }
 
+    //Размер хэш таблицы
     @Override
     public int size() {
         sizeCashe = memoryCache.size() + fileSystemCache.size();
         return sizeCashe;
     }
 
+    //Свободное пространство в таблице
     @Override
     public int emptySpace() {
         freeSpace = maxSizeMemoryCache + maxSizeFileSystemCache - size();
         return freeSpace;
     }
 
+    //Запись данных в хэш таблицу, при условии, если есть свободное место,
+    // определяемое переменной класса maxSizeMemoryCache
     @Override
     public boolean put(K key, V value) throws IOException {
         boolean emptyMemorySpace = memoryCache.emptySpace() > 0;
@@ -85,6 +88,7 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
         }
     }
 
+    //Получение данных с хэш таблицы
     @Override
     public V get(Object key) throws FileNotFoundException {
         if (memoryCache.containsKey(key)) {
@@ -96,12 +100,14 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
         }
     }
 
+    //Очистка всю хэш таблицу
     @Override
     public void clear() {
         memoryCache.clear();
         fileSystemCache.clear();
     }
 
+    //Возврат удалённых данных, по ключу
     @Override
     public V remove(Object key) {
         if (memoryCache.containsKey(key)) {
@@ -111,26 +117,31 @@ public class TwoLevelCache<K, V extends Serializable> implements Cache<K, V> {
         } else return null;
     }
 
+    //Проверяем, имеются данные в хэш таблице, по ключу
     @Override
     public boolean containsKey(Object key) {
         return memoryCache.containsKey(key) ? true : fileSystemCache.containsKey(key) ? true : false;
     }
 
+    //Проверяем, имеются данные в хэш таблице, по Обьекту
     @Override
     public boolean containsValue(Object value) {
         return memoryCache.containsValue(value) ? true : fileSystemCache.containsValue(value) ? true : false;
     }
 
+    //Получение первого ключа
     @Override
     public K firstKey() {
         return fileSystemCache.lastKey();
     }
 
+    //Получение последнего ключа
     @Override
     public K lastKey() {
         return memoryCache.firstKey();
     }
 
+    //Возврат карты для полечения данных в цикле
     public Map<K, V> getReturnMemoryCash() {
         returnMemoryCash.putAll(memoryCache.getMemoryObjects());
         returnMemoryCash.putAll(fileSystemCache.getReturnMemory());

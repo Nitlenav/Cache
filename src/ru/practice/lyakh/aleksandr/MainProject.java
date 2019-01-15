@@ -7,7 +7,9 @@ import java.util.Date;
 
 public class MainProject {
     public static void main(String[] args) throws IOException {
-        TwoLevelCache twoLevelCache = new TwoLevelCache(2, 6, "D:\\TMP_PRACTICE");
+//Переменная parth создана для проверки сохранения КЭШа в TMP директорию операционной системы.
+        String parth = new String("D:\\TMP_PRACTICE");
+        TwoLevelCache twoLevelCache = new TwoLevelCache(2, 6);
         Integer a = new Integer(1);
         String b = new String("Ключь - ЗОЛОТОЙ");
         Object c = new Object();

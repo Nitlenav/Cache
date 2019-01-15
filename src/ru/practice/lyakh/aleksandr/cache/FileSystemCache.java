@@ -1,9 +1,7 @@
 package ru.practice.lyakh.aleksandr.cache;
 
 import java.io.*;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -131,16 +129,19 @@ public class FileSystemCache<K, V extends Serializable> implements Cache<K, V>{
         }
     }
 
+    //Получение первого ключа
     @Override
     public K firstKey() {
         return (K) keyFileSystemCache.get(keyFileSystemCache.size() - 1);
     }
 
+    //Получение последнего ключа
     @Override
     public K lastKey() {
         return (K) keyFileSystemCache.get(0);
     }
 
+    //Возврат карты для полечения данных в цикле
     public Map<Object, V> getReturnMemory() {
         keyFileSystemCache.forEach(keyFileSystem -> returnMemory.put( keyFileSystem, get(keyFileSystem)));
 

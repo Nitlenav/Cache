@@ -64,11 +64,6 @@ public class MemoryCache<K, V> implements Cache<K, V> {
         return memoryObjects.remove(key);
     }
 
-    //Проверяем, имеются данные в хэш таблице, по Обьекту
-    @Override
-    public boolean containsValue(Object value) {
-        return memoryObjects.containsValue(value);
-    }
 
     //Проверяем, имеются данные в хэш таблице, по ключу
     @Override
@@ -76,17 +71,25 @@ public class MemoryCache<K, V> implements Cache<K, V> {
         return memoryObjects.containsKey(key);
     }
 
+    //Проверяем, имеются данные в хэш таблице, по Обьекту
+    @Override
+    public boolean containsValue(Object value) {
+        return memoryObjects.containsValue(value);
+    }
+
+    //Получение первого ключа
     @Override
     public K firstKey() {
         return (K) keyMemoryObjects.get(keyMemoryObjects.size() - 1 );
     }
 
+    //Получение последнего ключа
     @Override
     public K lastKey() {
         return (K) keyMemoryObjects.get(0);
     }
 
-
+    //Возврат карты для полечения данных в цикле
     public Map<K, V> getMemoryObjects() {
         return memoryObjects;
     }
